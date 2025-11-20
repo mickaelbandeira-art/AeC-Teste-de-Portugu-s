@@ -1,0 +1,158 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    /* AeC Brand Colors - Paleta Primária */
+    --cobalto: 208 100% 30%;
+    --noite: 217 100% 23%;
+    --ceu: 197 100% 47%;
+    
+    /* AeC Brand Colors - Paleta Secundária */
+    --amarelo: 50 100% 50%;
+    --verde: 88 55% 51%;
+    --rosa: 324 100% 46%;
+    
+    /* Base System Colors */
+    --background: 0 0% 100%;
+    --foreground: 0 0% 20%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 20%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 20%;
+
+    /* Primary = Cobalto AeC */
+    --primary: 208 100% 30%;
+    --primary-foreground: 0 0% 100%;
+    
+    /* Secondary = Céu AeC */
+    --secondary: 197 100% 47%;
+    --secondary-foreground: 0 0% 100%;
+
+    /* Muted backgrounds */
+    --muted: 197 50% 95%;
+    --muted-foreground: 0 0% 40%;
+
+    /* Accent = Amarelo AeC */
+    --accent: 50 100% 50%;
+    --accent-foreground: 0 0% 20%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 208 100% 30%;
+
+    --radius: 0.75rem;
+    
+    /* Gradients */
+    --gradient-hero: linear-gradient(135deg, hsl(208 100% 30%), hsl(197 100% 47%));
+    --gradient-cta: linear-gradient(135deg, hsl(50 100% 50%), hsl(88 55% 51%), hsl(324 100% 46%));
+    
+    /* Shadows */
+    --shadow-soft: 0 4px 20px rgba(0, 76, 151, 0.08);
+    --shadow-hover: 0 8px 30px rgba(0, 76, 151, 0.15);
+    
+    /* Transitions */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .dark {
+    --background: 217 100% 23%;
+    --foreground: 0 0% 95%;
+
+    --card: 217 100% 23%;
+    --card-foreground: 0 0% 95%;
+
+    --popover: 217 100% 23%;
+    --popover-foreground: 0 0% 95%;
+
+    --primary: 197 100% 47%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 208 100% 30%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 217 50% 15%;
+    --muted-foreground: 0 0% 70%;
+
+    --accent: 50 100% 50%;
+    --accent-foreground: 0 0% 20%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 217 50% 20%;
+    --input: 217 50% 20%;
+    --ring: 197 100% 47%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-helvetica;
+  }
+}
+
+@layer utilities {
+  .animate-fade-up {
+    animation: fadeUp 0.6s ease-out;
+  }
+  
+  .animate-fade-in {
+    animation: fadeIn 0.8s ease-out;
+  }
+  
+  .hover-lift {
+    transition: var(--transition-smooth);
+  }
+  
+  .hover-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-hover);
+  }
+  
+  .gradient-hero {
+    background: var(--gradient-hero);
+  }
+  
+  .gradient-cta {
+    background: var(--gradient-cta);
+  }
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
