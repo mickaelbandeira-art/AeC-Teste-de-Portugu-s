@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import logoAeC from "@/assets/logo-aec.webp";
 import { supabase } from "@/lib/supabase";
+import { ModeToggle } from "@/components/mode-toggle";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -55,6 +56,7 @@ const Header = () => {
                 {item.label}
               </a>
             ))}
+            <ModeToggle />
             {isAdmin && (
               <Link to="/admin">
                 <Button variant="outline" className="gap-2 border-cobalto text-cobalto hover:bg-cobalto/10">
@@ -89,6 +91,9 @@ const Header = () => {
                   {item.label}
                 </a>
               ))}
+              <div className="px-4 py-2">
+                <ModeToggle />
+              </div>
               {isAdmin && (
                 <Link
                   to="/admin"
