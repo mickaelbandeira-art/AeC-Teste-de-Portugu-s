@@ -8,6 +8,8 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { toast } from 'sonner';
 import Header from '@/components/Header';
 
+import { participants } from '@/data/participants';
+
 export default function Auth() {
     const navigate = useNavigate();
     const [isLogin, setIsLogin] = useState(true);
@@ -19,16 +21,20 @@ export default function Auth() {
     const [matricula, setMatricula] = useState('');
     const [cpf, setCpf] = useState('');
 
-    // Simulação de auto-preenchimento por matrícula
+    // Auto-preenchimento por matrícula
     const handleMatriculaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
         setMatricula(value);
 
-        // Simulação: se a matrícula tiver 6 dígitos, preenche nome e email
-        if (value.length === 6) {
-            setFullName('Usuário Exemplo da Silva');
-            setEmail(`${value}@exemplo.com`);
-            toast.info('Dados preenchidos automaticamente!');
+        const participant = participants.find(p => p.matricula === value);
+
+        if (participant) {
+            setFullName(participant.name);
+            setEmail(participant.email);
+            toast.success('Dados encontrados! Preenchimento automático realizado.');
+        } else if (value.length >= 6) {
+            // Se digitou 6+ caracteres e não achou, pode limpar ou avisar (opcional)
+            // Por enquanto, não limpamos para permitir edição manual caso não esteja na base
         }
     };
 
