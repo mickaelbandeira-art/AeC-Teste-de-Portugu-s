@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Menu, X, Shield } from "lucide-react";
+import { Menu, X, Shield, LogOut } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import logoAeC from "@/assets/logo-aec.webp";
@@ -9,10 +9,13 @@ import { ModeToggle } from "@/components/mode-toggle";
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
-    const checkAdmin = async () => {
+    const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
+      setIsLoggedIn(!!session);
+
       if (session?.user) {
         const { data: profile } = await supabase
           .from('profiles')
@@ -24,8 +27,22 @@ const Header = () => {
       }
     };
 
-    checkAdmin();
+    checkAuth();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsLoggedIn(!!session);
+      if (!session) setIsAdmin(false);
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    setIsLoggedIn(false);
+    setIsAdmin(false);
+    window.location.href = "/";
+  };
 
   const menuItems = [
     { label: "Início", href: "/#inicio" },
@@ -65,6 +82,16 @@ const Header = () => {
                 </Button>
               </Link>
             )}
+            {isLoggedIn && (
+              <Button
+                variant="ghost"
+                className="gap-2 text-red-600 hover:text-red-700 hover:bg-red-50"
+                onClick={handleLogout}
+              >
+                <LogOut className="h-4 w-4" />
+                Sair
+              </Button>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -103,6 +130,18 @@ const Header = () => {
                   <Shield className="h-4 w-4" />
                   Admin
                 </Link>
+              )}
+              {isLoggedIn && (
+                <button
+                  className="text-red-600 hover:text-red-700 transition-colors duration-200 px-4 py-2 font-myriad font-semibold flex items-center gap-2 w-full text-left"
+                  onClick={() => {
+                    handleLogout();
+                    setIsMenuOpen(false);
+                  }}
+                >
+                  <LogOut className="h-4 w-4" />
+                  Sair
+                </button>
               )}
             </div>
           </div>
