@@ -52,7 +52,7 @@ const Header = () => {
   ];
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-white shadow-md">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-background shadow-md">
       <div className="container mx-auto px-4">
         <nav className="flex items-center justify-between h-16">
           {/* Logo */}
@@ -68,7 +68,7 @@ const Header = () => {
               <a
                 key={item.label}
                 href={item.href}
-                className="text-cobalto hover:text-ceu transition-colors duration-200 font-myriad font-semibold"
+                className="text-cobalto dark:text-white hover:text-ceu transition-colors duration-200 font-myriad font-semibold"
               >
                 {item.label}
               </a>
@@ -76,7 +76,7 @@ const Header = () => {
             <ModeToggle />
             {isAdmin && (
               <Link to="/admin">
-                <Button variant="outline" className="gap-2 border-cobalto text-cobalto hover:bg-cobalto/10">
+                <Button variant="outline" className="gap-2 border-cobalto text-cobalto dark:text-white dark:border-white hover:bg-cobalto/10 dark:hover:bg-white/10">
                   <Shield className="h-4 w-4" />
                   Admin
                 </Button>
@@ -96,7 +96,7 @@ const Header = () => {
 
           {/* Mobile Menu Button */}
           <button
-            className="md:hidden text-cobalto"
+            className="md:hidden text-cobalto dark:text-white"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             aria-label="Toggle menu"
           >
@@ -106,13 +106,13 @@ const Header = () => {
 
         {/* Mobile Menu */}
         {isMenuOpen && (
-          <div className="md:hidden bg-white border-t border-gray-200 py-4 animate-fade-in">
+          <div className="md:hidden bg-background border-t border-gray-200 dark:border-gray-700 py-4 animate-fade-in">
             <div className="flex flex-col space-y-4">
               {menuItems.map((item) => (
                 <a
                   key={item.label}
                   href={item.href}
-                  className="text-cobalto hover:text-ceu transition-colors duration-200 px-4 py-2 font-myriad font-semibold"
+                  className="text-cobalto dark:text-white hover:text-ceu transition-colors duration-200 px-4 py-2 font-myriad font-semibold"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   {item.label}
@@ -124,7 +124,7 @@ const Header = () => {
               {isAdmin && (
                 <Link
                   to="/admin"
-                  className="text-cobalto hover:text-ceu transition-colors duration-200 px-4 py-2 font-myriad font-semibold flex items-center gap-2"
+                  className="text-cobalto dark:text-white hover:text-ceu transition-colors duration-200 px-4 py-2 font-myriad font-semibold flex items-center gap-2"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   <Shield className="h-4 w-4" />
