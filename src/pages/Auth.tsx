@@ -8,8 +8,6 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { toast } from 'sonner';
 import Header from '@/components/Header';
 
-import { participants } from '@/data/participants';
-
 export default function Auth() {
     const navigate = useNavigate();
     const [isLogin, setIsLogin] = useState(true);
@@ -21,20 +19,23 @@ export default function Auth() {
     const [matricula, setMatricula] = useState('');
     const [cpf, setCpf] = useState('');
 
-    // Auto-preenchimento por matrícula
-    const handleMatriculaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Auto-preenchimento por matrícula via Supabase
+    const handleMatriculaChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
         setMatricula(value);
 
-        const participant = participants.find(p => p.matricula === value);
+        if (value.length >= 3) {
+            const { data, error } = await supabase
+                .from('participants')
+                .select('name, email')
+                .eq('matricula', value)
+                .single();
 
-        if (participant) {
-            setFullName(participant.name);
-            setEmail(participant.email);
-            toast.success('Dados encontrados! Preenchimento automático realizado.');
-        } else if (value.length >= 6) {
-            // Se digitou 6+ caracteres e não achou, pode limpar ou avisar (opcional)
-            // Por enquanto, não limpamos para permitir edição manual caso não esteja na base
+            if (data && !error) {
+                setFullName(data.name);
+                setEmail(data.email);
+                toast.success('Dados encontrados! Preenchimento automático realizado.');
+            }
         }
     };
 
