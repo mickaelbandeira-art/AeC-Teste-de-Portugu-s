@@ -74,7 +74,7 @@ const Header = () => {
               </a>
             ))}
             <ModeToggle />
-            {isAdmin && (
+            {isLoggedIn && (
               <Link to="/admin">
                 <Button variant="outline" className="gap-2 border-cobalto text-cobalto dark:text-white dark:border-white hover:bg-cobalto/10 dark:hover:bg-white/10">
                   <Shield className="h-4 w-4" />
@@ -121,7 +121,7 @@ const Header = () => {
               <div className="px-4 py-2">
                 <ModeToggle />
               </div>
-              {isAdmin && (
+              {isLoggedIn && (
                 <Link
                   to="/admin"
                   className="text-cobalto dark:text-white hover:text-ceu transition-colors duration-200 px-4 py-2 font-myriad font-semibold flex items-center gap-2"

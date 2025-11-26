@@ -102,9 +102,9 @@ const App = () => (
             <Route
               path="/admin"
               element={
-                <AdminRoute>
+                <ProtectedRoute>
                   <AdminDashboard />
-                </AdminRoute>
+                </ProtectedRoute>
               }
             />
             <Route path="*" element={<NotFound />} />
