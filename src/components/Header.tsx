@@ -18,7 +18,24 @@ const Header = () => {
       setIsLoggedIn(!!session);
 
       if (session?.user) {
-        setIsAdmin(isUserAdmin(session.user.email));
+        const isAllowed = isUserAdmin(session.user.email);
+        setIsAdmin(isAllowed);
+
+        // Sync admin role to database if allowed but not set
+        if (isAllowed) {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('role')
+            .eq('id', session.user.id)
+            .single();
+
+          if (profile?.role !== 'admin') {
+            await supabase
+              .from('profiles')
+              .update({ role: 'admin' })
+              .eq('id', session.user.id);
+          }
+        }
       }
     };
 
