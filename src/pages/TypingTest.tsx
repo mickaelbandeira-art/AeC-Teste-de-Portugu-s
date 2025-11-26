@@ -12,7 +12,7 @@ import ResultsChart from '@/components/test/ResultsChart';
 
 import { getRandomText } from '@/data/testTexts';
 import { calculateWPM, calculateAccuracy, detectErrors, getErrorSummary, compareTexts } from '@/lib/textAnalysis';
-import { calculateWPM, calculateAccuracy, detectErrors, getErrorSummary, compareTexts } from '@/lib/textAnalysis';
+
 import { supabase } from '@/lib/supabase';
 
 type TestMode = 'selection' | 'instructions' | 'testing' | 'results';
@@ -83,6 +83,15 @@ const TypingTest = () => {
   const [isRunning, setIsRunning] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [pausedTime, setPausedTime] = useState(0);
+
+  // Refs para estado atualizado dentro de closures (setTimeout)
+  const isRunningRef = useRef(isRunning);
+  const isPausedRef = useRef(isPaused);
+
+  useEffect(() => {
+    isRunningRef.current = isRunning;
+    isPausedRef.current = isPaused;
+  }, [isRunning, isPaused]);
 
   // Métricas
   const [wpm, setWpm] = useState(0);
@@ -204,7 +213,7 @@ const TypingTest = () => {
     }
   };
 
-  const playPhrase = (index: number, currentPhrases: string[]) => {
+  const playPhrase = (index: number, currentPhrases: string[], forceReset = true) => {
     if (index >= currentPhrases.length) {
       setIsSpeaking(false);
       return;
@@ -213,8 +222,11 @@ const TypingTest = () => {
     setIsSpeaking(true);
     setCurrentPhraseIndex(index);
 
-    // Cancelar qualquer fala anterior
-    window.speechSynthesis.cancel();
+    // Cancelar apenas se for um reset forçado (início manual ou reinício)
+    // Não cancelar se for a continuação natural da próxima frase
+    if (forceReset) {
+      window.speechSynthesis.cancel();
+    }
 
     const utterance = new SpeechSynthesisUtterance(currentPhrases[index]);
     utterance.lang = 'pt-BR';
@@ -223,8 +235,9 @@ const TypingTest = () => {
     utterance.onend = () => {
       // Pausa de 2 segundos entre frases
       timeoutRef.current = setTimeout(() => {
-        if (!isPaused && isRunning) {
-          playPhrase(index + 1, currentPhrases);
+        // Usar refs para verificar o estado mais recente
+        if (!isPausedRef.current && isRunningRef.current) {
+          playPhrase(index + 1, currentPhrases, false);
         }
       }, 2000);
     };
