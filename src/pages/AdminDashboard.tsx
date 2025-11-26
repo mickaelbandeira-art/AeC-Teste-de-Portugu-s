@@ -100,7 +100,7 @@ const AdminDashboard = () => {
       setResults(data || []);
     } catch (err: any) {
       console.error("Error fetching results:", err);
-      setError("Erro ao carregar resultados. Verifique suas permissões.");
+      setError(`Erro ao carregar resultados: ${err.message || err.error_description || "Verifique suas permissões."}`);
     } finally {
       setLoading(false);
     }
