@@ -42,6 +42,10 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
 
+import { isUserAdmin } from "@/config/permissions";
+
+// ... (imports)
+
 const AdminRoute = ({ children }: { children: React.ReactNode }) => {
   const [session, setSession] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -53,13 +57,7 @@ const AdminRoute = ({ children }: { children: React.ReactNode }) => {
       setSession(session);
 
       if (session?.user) {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('role')
-          .eq('id', session.user.id)
-          .single();
-
-        setIsAdmin(profile?.role === 'admin');
+        setIsAdmin(isUserAdmin(session.user.email));
       }
 
       setLoading(false);
@@ -80,6 +78,17 @@ const AdminRoute = ({ children }: { children: React.ReactNode }) => {
 
   return <>{children}</>;
 };
+
+// ...
+
+<Route
+  path="/admin"
+  element={
+    <AdminRoute>
+      <AdminDashboard />
+    </AdminRoute>
+  }
+/>
 
 const App = () => (
   <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
@@ -102,9 +111,9 @@ const App = () => (
             <Route
               path="/admin"
               element={
-                <ProtectedRoute>
+                <AdminRoute>
                   <AdminDashboard />
-                </ProtectedRoute>
+                </AdminRoute>
               }
             />
             <Route path="*" element={<NotFound />} />
