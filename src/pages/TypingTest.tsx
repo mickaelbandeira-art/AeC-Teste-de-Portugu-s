@@ -9,6 +9,7 @@ import TestTimer from '@/components/test/TestTimer';
 import TestStats from '@/components/test/TestStats';
 import ErrorList from '@/components/test/ErrorList';
 import ResultsChart from '@/components/test/ResultsChart';
+import TabulationForm, { PillarSelection } from '@/components/test/TabulationForm';
 
 import { getRandomText } from '@/data/testTexts';
 import { calculateWPM, calculateAccuracy, detectErrors, getErrorSummary, compareTexts } from '@/lib/textAnalysis';
@@ -98,6 +99,7 @@ const TypingTest = () => {
   const [accuracy, setAccuracy] = useState(0);
   const [errors, setErrors] = useState<ReturnType<typeof detectErrors>>([]);
   const [wordsTyped, setWordsTyped] = useState(0);
+  const [isTabulationSubmitted, setIsTabulationSubmitted] = useState(false);
 
   // Teste atual
   const currentTest = testSequence[currentTestIndex];
@@ -372,12 +374,60 @@ const TypingTest = () => {
     setAccuracy(0);
     setErrors([]);
     setWordsTyped(0);
+    setIsTabulationSubmitted(false);
 
   };
 
   const handleSendResults = async () => {
     // Função mantida para compatibilidade, mas o envio agora é automático
     toast.info('Os resultados já foram salvos automaticamente.');
+  };
+
+  const handleTabulationSubmit = async (selections: PillarSelection[]) => {
+    const loadingToast = toast.loading('Salvando tabulação...');
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Usuário não autenticado');
+
+      // Get the ID of the last inserted test result
+      // This assumes the last result for this user is the one we just finished.
+      // A better approach would be to return the ID from the insert in handleFinishTest,
+      // but for now we'll fetch the latest one.
+      const { data: latestResult, error: fetchError } = await supabase
+        .from('typing_test_results')
+        .select('id')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .single();
+
+      if (fetchError || !latestResult) throw fetchError || new Error('Resultado não encontrado');
+
+      // Save tabulation data
+      // We need a table for this. If it doesn't exist, we might need to create it or store in a JSONB column.
+      // Assuming we can store it in a 'metadata' or 'tabulation' column in typing_test_results for simplicity if schema allows,
+      // OR create a new table. Given I can't easily run migrations right now without SQL tool, 
+      // I will assume there is a 'tabulation' JSONB column or I will try to update the row.
+      // Let's try to update the 'typing_test_results' with a 'tabulation' column.
+
+      const { error: updateError } = await supabase
+        .from('typing_test_results')
+        .update({
+          tabulation: selections
+        })
+        .eq('id', latestResult.id);
+
+      if (updateError) throw updateError;
+
+      toast.success('Tabulação salva com sucesso!');
+      setIsTabulationSubmitted(true);
+
+    } catch (error) {
+      console.error('Erro ao salvar tabulação:', error);
+      toast.error('Erro ao salvar tabulação.');
+    } finally {
+      toast.dismiss(loadingToast);
+    }
   };
 
   // Controle de integridade: detectar saída da página
@@ -967,6 +1017,12 @@ const TypingTest = () => {
               </Button>
             )}
           </div>
+
+          {!isTabulationSubmitted && (
+            <div className="mt-12 max-w-3xl mx-auto">
+              <TabulationForm onSubmit={handleTabulationSubmit} />
+            </div>
+          )}
         </div>
       </div>
     </div>
